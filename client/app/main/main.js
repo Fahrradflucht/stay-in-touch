@@ -4,7 +4,7 @@ angular.module('stayInTouchApp')
   .config(function($stateProvider) {
     $stateProvider
       .state('main', {
-        url: '/',
+        url: '',
         template: '<main></main>'
       });
   });
