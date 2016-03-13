@@ -59,9 +59,22 @@ function handleError(res, statusCode) {
   };
 }
 
+function handleUnauthorized(req, res) {
+  return function(entity) {
+    if(!entity) {
+      return null;
+    }
+    if(entity.user.toString() !== req.user._id.toString()){
+      res.send(403).end();
+      return null;
+    }
+    return entity;
+  }
+}
+
 // Gets a list of Contacts
 export function index(req, res) {
-  return Contact.find().exec()
+  return Contact.find({ user: req.user }).exec()
     .then(respondWithResult(res))
     .catch(handleError(res));
 }
@@ -70,12 +83,14 @@ export function index(req, res) {
 export function show(req, res) {
   return Contact.findById(req.params.id).exec()
     .then(handleEntityNotFound(res))
+    .then(handleUnauthorized(req, res))
     .then(respondWithResult(res))
     .catch(handleError(res));
 }
 
 // Creates a new Contact in the DB
 export function create(req, res) {
+  req.body.user = req.user;
   return Contact.create(req.body)
     .then(respondWithResult(res, 201))
     .catch(handleError(res));
@@ -88,6 +103,7 @@ export function update(req, res) {
   }
   return Contact.findById(req.params.id).exec()
     .then(handleEntityNotFound(res))
+    .then(handleUnauthorized(req, res))
     .then(saveUpdates(req.body))
     .then(respondWithResult(res))
     .catch(handleError(res));
@@ -97,6 +113,7 @@ export function update(req, res) {
 export function destroy(req, res) {
   return Contact.findById(req.params.id).exec()
     .then(handleEntityNotFound(res))
+    .then(handleUnauthorized(req, res))
     .then(removeEntity(res))
     .catch(handleError(res));
 }
