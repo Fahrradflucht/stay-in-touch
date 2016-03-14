@@ -1,20 +1,60 @@
 <div class="container">
-  <div class="row">
-    <div class="col-lg-12">
-      <h1 class="page-header">Contacts:</h1>
-      <ul class="list-group" ng-repeat="contact in $ctrl.contacts">
-        <li><a href="#">{{contact.name}}<button type="button" class="close" ng-click="$ctrl.deleteContact(contact)">&times;</button></a></li>
-      </ul>
+  <div class="page-header">
+    <div class="btn-toolbar pull-right">
+      <button class="btn btn-primary" ng-click="$ctrl.showAddContact = !$ctrl.showAddContact">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+      </button>
+    </div>
+    <h2>Contacts: </h2>
+  </div>
 
-      <form class="contact-form">
-        <div class="input-group">
-          <input class="form-control" type="text" name="" ng-model="$ctrl.newContact">
-          <span class="input-group-btn">
-            <button type="submit" class="btn btn-primary" ng-click="$ctrl.addContact()">Add New</button>
-          </span>
+  <div class="panel panel-default" ng-show="$ctrl.showAddContact">
+    <div class="panel-body">
+      <form name="contactForm" novalidate>
+        <div class="form-group">
+          <label>Name</label>
+          <input class="form-control" type="text" ng-model="$ctrl.newContact.name" required>
         </div>
-      </form>
 
+        <div class="form-group">
+          <label>How often would you like get in touch? (In days)</label>
+          <input class="form-control" type="number" ng-model="$ctrl.newContact.idealContactFrequency" required>
+        </div>
+
+        <div class="form-group">
+          <label>And often do you really NEED to get in touch? (Again in days)</label>
+          <input class="form-control" type="number" ng-model="$ctrl.newContact.minimumContactFrequency" required>
+        </div>
+
+        <button type="submit" class="btn btn-default" ng-disabled="!contactForm.$valid||($ctrl.newContact.idealContactFrequency>$ctrl.newContact.minimumContactFrequency)" ng-click="$ctrl.addContact()">Submit</button>
+
+      </form>
     </div>
   </div>
+  <ul class="list-group">
+    <li class="list-group-item" ng-repeat="contact in $ctrl.contacts">
+      <a href="#" ng-click="contact.expand = !contact.expand">
+        <h4>{{contact.name}} <span class="label label-success pull-right">Alright</span></h4>
+      </a>
+      <div ng-show="contact.expand">
+        <hr/>
+        <div class="row">
+          <strong class="col-xs-6">Last interaction:</strong>
+          <p class="col-xs-6 text-justify">
+          Go out for Coffe<br>
+          <small>- 7 days ago</small>
+          </p>
+        </div>
+        <div class="row">
+          <form class="col-xs-12" name="interactionForm">
+            <div class="form-group">
+              <label>How did you interact?</label>
+              <input class="form-control" type="text" ng-model="$ctrl.newInteraction.note">
+            </div>
+            <button type="submit" class="btn btn-default" ng-click="$ctrl.addInteraction(contact)">Save</button>
+          </form>
+        </div>
+      </div>
+    </li>
+  </ul>
 </div>
