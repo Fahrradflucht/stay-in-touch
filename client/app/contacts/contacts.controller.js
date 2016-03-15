@@ -10,12 +10,14 @@
       $scope.$on('$destroy', function() {
         socket.unsyncUpdates('contact');
       });
+
     }
 
     $onInit() {
       this.$http.get('/api/contacts').then(response => {
         this.contacts = response.data;
         this.socket.syncUpdates('contact', this.contacts);
+
       });
     }
 
@@ -37,10 +39,15 @@
     addInteraction(contact) {
       if (this.newInteraction) {
         this.$http.post('/api/contacts/' + contact._id + '/interactions', {
-          note: this.newInteraction.note
+          note: this.newInteraction.note,
+          date: Date.now()
         });
         this.newInteraction = {};
       }
+    }
+
+    deleteInteraction(contact, interaction) {
+      this.$http.delete('/api/contacts/' + contact._id + '/interactions/' + interaction._id);
     }
   }
 

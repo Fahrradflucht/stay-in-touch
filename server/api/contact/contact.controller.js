@@ -21,9 +21,29 @@ function respondWithResult(res, statusCode) {
   };
 }
 
+function addInteraction(interaction) {
+  return function(entity) {
+    var updated = _.merge(entity, entity.interactions.push(interaction));
+    return updated.save()
+      .then(updated => {
+        return updated;
+      });
+  };
+}
+
 function saveUpdates(updates) {
   return function(entity) {
     var updated = _.merge(entity, updates);
+    return updated.save()
+      .then(updated => {
+        return updated;
+      });
+  };
+}
+
+function removeInteraction(interactionId) {
+  return function(entity) {
+    var updated = _.merge(entity, entity.interactions.pull({_id: interactionId}));
     return updated.save()
       .then(updated => {
         return updated;
@@ -115,5 +135,23 @@ export function destroy(req, res) {
     .then(handleEntityNotFound(res))
     .then(handleUnauthorized(req, res))
     .then(removeEntity(res))
+    .catch(handleError(res));
+}
+
+export function createInteraction(req, res) {
+  return Contact.findById(req.params.id).exec()
+    .then(handleEntityNotFound(res))
+    .then(handleUnauthorized(req, res))
+    .then(addInteraction(req.body))
+    .then(respondWithResult(res))
+    .catch(handleError(res));
+}
+
+export function destroyInteraction(req, res) {
+  return Contact.findById(req.params.id).exec()
+    .then(handleEntityNotFound(res))
+    .then(handleUnauthorized(req, res))
+    .then(removeInteraction(req.params.interactionId))
+    .then(respondWithResult(res))
     .catch(handleError(res));
 }

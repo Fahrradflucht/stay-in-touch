@@ -6,7 +6,7 @@ var ContactSchema = new mongoose.Schema({
   name: String,
   idealContactFrequency: Number,
   minimumContactFrequency: Number,
-  meetings: [{
+  interactions: [{
     note: String,
     date: Date,
   }],

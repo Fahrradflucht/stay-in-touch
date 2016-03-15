@@ -54,6 +54,9 @@
             <button type="submit" class="btn btn-default" ng-click="$ctrl.addInteraction(contact)">Save</button>
           </form>
         </div>
+        <ul>
+          <li ng-repeat="interaction in contact.interactions"><a href="#" ng-click="$ctrl.deleteInteraction(contact, interaction)">{{interaction.note}}</a></li>
+        </ul>
       </div>
     </li>
   </ul>
