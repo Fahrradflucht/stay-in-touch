@@ -33,30 +33,37 @@
   </div>
   <ul class="list-group">
     <li class="list-group-item" ng-repeat="contact in $ctrl.contacts">
-      <a href="#" ng-click="contact.expand = !contact.expand">
-        <h4>{{contact.name}} <span class="label label-success pull-right">Alright</span></h4>
+      <a href="#" ng-click="$ctrl.toggleExpanded(contact)">
+        <h4>{{contact.name}} <span class="label pull-right" ng-class="$ctrl.statusLabels[$ctrl.getStatus(contact)]">{{$ctrl.getStatus(contact)}}</span></h4>
       </a>
-      <div ng-show="contact.expand">
+      <div ng-show="$ctrl.expanded.includes(contact._id)">
         <hr/>
-        <div class="row">
+        <div class="row" ng-show="contact.interactions.length">
           <strong class="col-xs-6">Last interaction:</strong>
           <p class="col-xs-6 text-justify">
-          Go out for Coffe<br>
-          <small>- 7 days ago</small>
+          {{contact.interactions[contact.interactions.length-1].note}}
+          <br>
+          <small>- {{$ctrl.daysSinceLastInteraction(contact) | number:0}} days ago</small>
           </p>
         </div>
+
         <div class="row">
-          <form class="col-xs-12" name="interactionForm">
+          <form class="col-xs-12 well" name="interactionForm">
+          <h4>Add an interaction:</h4>
+        <hr/>
             <div class="form-group">
-              <label>How did you interact?</label>
-              <input class="form-control" type="text" ng-model="$ctrl.newInteraction.note">
+              <label>Note:</label>
+              <input class="form-control" type="text" ng-model="contact.newInteraction.note">
+            </div>
+            <div class="input-group">
+              <input type="text" class="form-control" uib-datepicker-popup="dd.MM.yyyy" ng-model="contact.newInteraction.date" is-open="$ctrl.datepicker.open">
+              <span class="input-group-btn">
+                <button class="btn btn-default" ng-click="$ctrl.datepicker.open = !$ctrl.datepicker.open"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
             </div>
             <button type="submit" class="btn btn-default" ng-click="$ctrl.addInteraction(contact)">Save</button>
           </form>
         </div>
-        <ul>
-          <li ng-repeat="interaction in contact.interactions"><a href="#" ng-click="$ctrl.deleteInteraction(contact, interaction)">{{interaction.note}}</a></li>
-        </ul>
       </div>
     </li>
   </ul>

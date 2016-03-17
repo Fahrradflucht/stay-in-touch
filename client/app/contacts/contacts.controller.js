@@ -6,6 +6,16 @@
       this.$http = $http;
       this.socket = socket;
       this.contacts = [];
+      this.expanded = [];
+      this.datepicker = {
+        open: false
+      };
+      this.statusLabels = {
+        "Unknown": "label-default",
+        "Alright": "label-success",
+        "Not Ideal": "label-warning",
+        "Warning": "label-danger"
+      };
 
       $scope.$on('$destroy', function() {
         socket.unsyncUpdates('contact');
@@ -17,7 +27,6 @@
       this.$http.get('/api/contacts').then(response => {
         this.contacts = response.data;
         this.socket.syncUpdates('contact', this.contacts);
-
       });
     }
 
@@ -37,18 +46,50 @@
     }
 
     addInteraction(contact) {
-      if (this.newInteraction) {
+      if (contact.newInteraction) {
         this.$http.post('/api/contacts/' + contact._id + '/interactions', {
-          note: this.newInteraction.note,
-          date: Date.now()
+          note: contact.newInteraction.note,
+          date: contact.newInteraction.date
         });
-        this.newInteraction = {};
+        contact.newInteraction = {};
       }
     }
 
     deleteInteraction(contact, interaction) {
       this.$http.delete('/api/contacts/' + contact._id + '/interactions/' + interaction._id);
     }
+
+    toggleExpanded(contact) {
+      if (this.expanded.includes(contact._id)) {
+        this.expanded.splice(this.expanded.indexOf(contact._id), 1);
+      } else {
+        this.expanded.push(contact._id);
+      }
+    }
+
+    daysSinceLastInteraction(contact) {
+      if (contact.interactions.length>0) {
+        let date = new Date(contact.interactions[contact.interactions.length-1].date);
+        let today = new Date();
+        return (today-date)/1000/60/60/24;
+      }
+    }
+
+    getStatus(contact) {
+      if (contact.interactions.length>0) {
+        let dayDiff = this.daysSinceLastInteraction(contact);
+        if (dayDiff<contact.idealContactFrequency){
+          return "Alright";
+        } else if (dayDiff<contact.minimumContactFrequency){
+          return "Not Ideal";
+        } else {
+          return "Warning";
+        }
+      } else {
+      return "Unknown"
+      }
+    }
+
   }
 
 
