@@ -2,9 +2,11 @@
 (function(){
 
   class ContactsComponent {
-    constructor($http, $scope, socket) {
+    constructor($http, $scope, socket, Auth, $state) {
       this.$http = $http;
       this.socket = socket;
+      this.Auth = Auth;
+      this.$state = $state;
       this.contacts = [];
       this.expanded = [];
       this.datepicker = {
@@ -24,10 +26,14 @@
     }
 
     $onInit() {
-      this.$http.get('/api/contacts').then(response => {
-        this.contacts = response.data;
-        this.socket.syncUpdates('contact', this.contacts);
-      });
+      if(this.Auth.isLoggedIn()){
+        this.$http.get('/api/contacts').then(response => {
+          this.contacts = response.data;
+          this.socket.syncUpdates('contact', this.contacts);
+        });
+      } else {
+        this.$state.go('login');
+      }
     }
 
     addContact() {
