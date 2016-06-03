@@ -1,5 +1,7 @@
 # stay-in-touch
 
+This is just an app I build for fun to learn a little bit more about angular and MongoDB. I thought I would add more functionality to it (like notifications or *proper tests*) but I did'nt and since I found it quite usefull to see how other people worked with angular fullstack I thought I put it up here.
+
 This project was generated with the [Angular Full-Stack Generator](https://github.com/DaftMonk/generator-angular-fullstack) version 3.4.0.
 
 ## Getting Started
